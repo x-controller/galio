@@ -1,0 +1,38 @@
+<template>
+    <div id="app">
+        <el-backtop></el-backtop>
+        <div style="margin: 5px">
+            <el-radio-group v-model="route" @change="onPush">
+                <el-radio-button label="index">Home</el-radio-button>
+                <el-radio-button label="twitter">Twitter</el-radio-button>
+                <el-radio-button label="task">Task</el-radio-button>
+                <el-radio-button label="dogeRich">DogeRich</el-radio-button>
+                <el-radio-button label="muskTwitter">马斯克推特</el-radio-button>
+            </el-radio-group>
+        </div>
+        <router-view></router-view>
+    </div>
+</template>
+
+<script>
+
+    export default {
+        name: 'App',
+        data(){
+            return{
+                route:""
+            }
+        },
+        methods: {
+            onPush(name) {
+                const route = this.$route.name
+                if (name !== route) {
+                    this.$router.push({name})
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+</style>
