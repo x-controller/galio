@@ -14,6 +14,8 @@ import {
 // } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:57061')
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{
     scheme: 'app',
@@ -29,10 +31,10 @@ async function createWindow() {
         width: 800,
         height: 600,
         webPreferences: {
-
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-            nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+            nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+            contextIsolation: false,
         }
     })
 
@@ -43,7 +45,7 @@ async function createWindow() {
     } else {
         createProtocol('app')
         // Load the index.html when not in development
-        win.loadURL('app://./index.html')
+        await win.loadURL('app://./index.html')
     }
 }
 
@@ -59,7 +61,8 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0) createWindow().then(_ => {
+    })
 })
 
 // This method will be called when Electron has finished
@@ -74,7 +77,7 @@ app.on('ready', async () => {
             console.error('Vue Devtools failed to install:', e.toString())
         }
     }
-    createWindow()
+    await createWindow()
 })
 
 // Exit cleanly on request from parent process in development mode.

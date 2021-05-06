@@ -8,6 +8,8 @@
                 <el-radio-button label="task">Task</el-radio-button>
                 <el-radio-button label="dogeRich">DogeRich</el-radio-button>
                 <el-radio-button label="muskTwitter">马斯克推特</el-radio-button>
+                <el-radio-button label="websocket">WS</el-radio-button>
+                <el-radio-button label="symbol">HB-SYMBOL</el-radio-button>
             </el-radio-group>
         </div>
         <router-view></router-view>

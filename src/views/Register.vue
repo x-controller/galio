@@ -8,7 +8,7 @@
                 <el-input v-model="form.password" type="password"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="onSubmit">登录</el-button>
+                <el-button type="primary" @click="onSubmit">注册</el-button>
             </el-form-item>
         </el-form>
         <el-button @click="$router.push({name:'index'})">index</el-button>
@@ -17,10 +17,10 @@
 </template>
 
 <script>
-    import helper from "../helper"
+    import helper from "../helper";
 
     export default {
-        name: "Login",
+        name: "Register",
         data() {
             return {
                 form: {}
@@ -28,7 +28,7 @@
         },
         methods: {
             onSubmit() {
-                helper.request('login', this.form, 'post').then(res => {
+                helper.request('register', this.form, 'post').then(res => {
                     if (res.code === 0) {
                         helper.setStorage("user", res.data.user)
                         helper.setStorageStr("token", res.data.token)

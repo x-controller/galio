@@ -3,7 +3,7 @@ import ipcRenderer from "electron"
 
 
 const baseRequest = axios.create({
-    baseURL: 'http://127.0.0.1/galio/',
+    baseURL: 'http://192.168.0.111:9601/galio/',
     timeout: 0,
 })
 
@@ -73,8 +73,13 @@ const uuid = () => {
     return uuid.substr(uuid.lastIndexOf("/") + 1);
 }
 
+const delStorage = (name) => {
+    localStorage.removeItem(name)
+}
+
 export default {
     uuid,
+    delStorage,
     getStorage,
     getStorageStr,
     nodeRequest,

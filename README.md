@@ -1,24 +1,4 @@
-# galio
-
-## Project setup
-```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+2021年5月6日
+14点18分 添加登录注册
+15点40分 首页验证登录状态
+15点44分 注销

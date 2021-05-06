@@ -26,7 +26,7 @@
                     .then((myJson) => {
                         this.loading = false
                         this.list = myJson.data
-                    });
+                    })
             }
         }
     }
