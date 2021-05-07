@@ -9,6 +9,7 @@ export default new Router({
         {
             path: '', component: require('../views/Base').default, children: [
                 {path: '', name: 'index', component: require('../views/Index').default},
+                {path: 'blockIndex', name: 'blockIndex', component: require('../views/Block/Index').default},
                 {path: 'symbol', name: 'symbol', component: require('../views/HuoBi/Symbol').default},
                 {path: 'login', name: 'login', component: require('../views/Login').default},
                 {path: 'websocket', name: 'websocket', component: require('../views/HuoBi/Websocket').default},
