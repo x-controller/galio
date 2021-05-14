@@ -11,8 +11,8 @@
                 <el-button type="primary" @click="onSubmit">登录</el-button>
             </el-form-item>
         </el-form>
-        <el-button @click="$router.push({name:'index'})">index</el-button>
-        <el-button @click="$router.push({name:'register'})">register</el-button>
+        <el-button @click="$router.push({name:'index'})">首页</el-button>
+        <el-button @click="$router.push({name:'register'})">注册</el-button>
     </div>
 </template>
 

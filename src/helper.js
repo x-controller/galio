@@ -1,5 +1,6 @@
 import axios from "axios"
-import ipcRenderer from "electron"
+
+const {ipcRenderer} = require('electron')
 
 
 const baseRequest = axios.create({
@@ -48,6 +49,10 @@ const request = (action, params = {}, method = 'get') => {
     return baseRequest[method](action, params)
 }
 
+const nodeRequestCustom = (optional) => {
+    return ipcRenderer.sendSync("requestGet", optional)
+}
+
 const nodeRequest = (action, params = {}, method = 'get') => {
     if (method === 'get') {
         let url = "http://127.0.0.1/galio/" + action
@@ -66,6 +71,14 @@ const nodeRequest = (action, params = {}, method = 'get') => {
     }
 }
 
+const nodeRequestPost = (optional, data, headers = []) => {
+    return ipcRenderer.sendSync("request-post", {
+        optional,
+        data,
+        headers
+    })
+}
+
 const uuid = () => {
     const temp = URL.createObjectURL(new Blob());
     const uuid = temp.toString();
@@ -77,6 +90,14 @@ const delStorage = (name) => {
     localStorage.removeItem(name)
 }
 
+const getData = (name) => {
+    return ipcRenderer.sendSync('get-data', name)
+}
+
+const setData = async (name, value) => {
+    return ipcRenderer.sendSync('set-data', {name, value})
+}
+
 export default {
     uuid,
     delStorage,
@@ -86,4 +107,8 @@ export default {
     request,
     setStorage,
     setStorageStr,
+    getData,
+    setData,
+    nodeRequestCustom,
+    nodeRequestPost
 }

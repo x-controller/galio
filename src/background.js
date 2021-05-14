@@ -14,7 +14,11 @@ import {
 // } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
-app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:57061')
+const Store = require('electron-store');
+
+const store = new Store();
+
+// app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:57061')
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{
@@ -30,6 +34,7 @@ async function createWindow() {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
+        icon: "./src/assets/favicon.ico",
         webPreferences: {
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -117,7 +122,7 @@ const requestGet = async (optional) => {
     })
 }
 
-const requestPost = async (optional, data) => {
+const requestPost = async (optional, data, headers = []) => {
     return new Promise((resolve) => {
         app.whenReady().then(() => {
             const {
@@ -125,6 +130,12 @@ const requestPost = async (optional, data) => {
             } = require('electron')
             let responseData = ""
             const request = net.request(optional)
+            if (headers) {
+                headers.forEach((item)=>{
+                    request.setHeader(item[0],item[1])
+                })
+            }
+
             request.on('response', (response) => {
                 response.on('data', (chunk) => {
                     responseData += chunk
@@ -139,8 +150,8 @@ const requestPost = async (optional, data) => {
     })
 }
 
-ipcMain.on('request-post', async (event, {optional, data}) => {
-    const response = await requestPost(optional, data)
+ipcMain.on('request-post', async (event, {optional, data, headers = []}) => {
+    const response = await requestPost(optional, data, headers)
     event.returnValue = JSON.parse(response.toString())
 })
 
@@ -148,4 +159,12 @@ ipcMain.on('request-post', async (event, {optional, data}) => {
 ipcMain.on('request-get', async (event, args) => {
     const response = await requestGet(args)
     event.returnValue = JSON.parse(response.toString())
+})
+
+ipcMain.on('get-data', (event, arg) => {
+    event.returnValue = store.get(arg)
+})
+
+ipcMain.on('set-data', (event, {name, value}) => {
+    event.returnValue = store.set(name, value)
 })

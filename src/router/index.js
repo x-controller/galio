@@ -19,6 +19,7 @@ export default new Router({
                 {path: 'muskTwitter', name: 'muskTwitter', component: require('../views/MuskTwitter').default},
                 {path: 'task', name: 'task', component: require('../views/Task').default},
                 {path: 'dogeRich', name: 'dogeRich', component: require('../views/DogeRich').default},
+                {path: 'huobiNotice', name: 'huobiNotice', component: require('../views/HuobiNotice').default},
             ]
         }
     ]

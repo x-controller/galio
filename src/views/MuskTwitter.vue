@@ -11,6 +11,8 @@
 </template>
 
 <script>
+    import helper from "../helper";
+
     export default {
         name: "MuskTwitter",
         data() {
@@ -23,7 +25,10 @@
             }
         },
         created() {
-            this.getData()
+            helper.nodeRequestCustom({
+
+            })
+            // this.getData()
         },
         methods: {
             changeSync(res) {
@@ -54,8 +59,6 @@
             },
             getData() {
                 this.loading = true
-                // http://192.168.0.111:9601/chen/tweetSingle
-                // https://api.chmzho.com/chen/tweetSingle
                 fetch(`https://api.chmzho.com/chen/tweetSingle?uid=44196397`).then((response) => response.json())
                     .then((myJson) => {
                         const last = myJson.data.data[0]
