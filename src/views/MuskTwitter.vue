@@ -1,12 +1,15 @@
 <template>
     <div>
+        <el-input v-model="words" placeholder="匹配关键词" style="width: 200px;margin: 2px"></el-input>
+
         <div style="margin: 5px">
             <el-checkbox border v-model="loop" @change="changeSync">监听</el-checkbox>
         </div>
-        <el-table :data="list.data" border size="small" v-loading="loading">
-            <el-table-column label="推文" prop="content.full_text"></el-table-column>
-            <el-table-column label="时间" prop="content.created_at"></el-table-column>
-        </el-table>
+
+        <el-button style="margin: 2px;max-width: 95%;overflow: hidden" v-for="(item,index) in list.data" :key="index">
+            <div>{{item.content.full_text}}</div>
+            <span size="mini">{{item.content.created_at}}</span>
+        </el-button>
     </div>
 </template>
 
@@ -21,14 +24,12 @@
                 list: [],
                 loop: false,
                 lastId: 0,
-                loopIndex: ""
+                loopIndex: "",
+                words: ""
             }
         },
         created() {
-            helper.nodeRequestCustom({
-
-            })
-            // this.getData()
+            this.getData()
         },
         methods: {
             changeSync(res) {
@@ -41,13 +42,7 @@
                 }
             },
             showNotification(title, body) {
-                const myNotification = new Notification(title, {
-                    body: '内容: ' + body
-                })
-
-                myNotification.onclick = () => {
-                    console.log('Notification clicked')
-                }
+                alert("新的推特！")
             },
             searchGet() {
                 this.page = 1
@@ -66,8 +61,13 @@
                             this.lastId = last.id
                         } else {
                             if (last.id > this.lastId) {
-                                this.showNotification("马斯克又玩推特拉!", last.content.full_text)
                                 this.lastId = last.id
+                                if (this.words) {
+                                    if (last.content.full_text.include(this.words))
+                                        alert("新的相关推特!")
+                                } else {
+                                    this.showNotification("马斯克又玩推特拉!", last.content.full_text)
+                                }
                             }
                         }
                         this.loading = false

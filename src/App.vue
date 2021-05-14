@@ -4,14 +4,14 @@
         <div style="margin: 5px">
             <el-radio-group v-model="route" @change="onPush">
                 <el-radio-button label="index">Home</el-radio-button>
-                <el-radio-button label="twitter">Twitter</el-radio-button>
-                <el-radio-button label="task">Task</el-radio-button>
-                <el-radio-button label="dogeRich">DogeRich</el-radio-button>
+<!--                <el-radio-button label="twitter">Twitter</el-radio-button>-->
+<!--                <el-radio-button label="task">Task</el-radio-button>-->
+<!--                <el-radio-button label="dogeRich">DogeRich</el-radio-button>-->
                 <el-radio-button label="muskTwitter">马斯克推特</el-radio-button>
-                <el-radio-button label="websocket">WS</el-radio-button>
-                <el-radio-button label="symbol">HB-SYMBOL</el-radio-button>
-                <el-radio-button label="blockIndex">BlockIndex</el-radio-button>
-                <el-radio-button label="bookmark">书签</el-radio-button>
+<!--                <el-radio-button label="websocket">WS</el-radio-button>-->
+<!--                <el-radio-button label="symbol">HB-SYMBOL</el-radio-button>-->
+<!--                <el-radio-button label="blockIndex">BlockIndex</el-radio-button>-->
+<!--                <el-radio-button label="bookmark">书签</el-radio-button>-->
                 <el-radio-button label="huobiNotice">火币公告</el-radio-button>
             </el-radio-group>
         </div>
@@ -40,4 +40,7 @@
 </script>
 
 <style>
+    body{
+        font-family: "Microsoft YaHei UI Light",sans-serif;
+    }
 </style>

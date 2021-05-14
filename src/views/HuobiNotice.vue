@@ -1,10 +1,10 @@
 <template>
     <div>
-        <template v-for="(item,index) in notices">
-            <div :key="index">
-                <el-button style="margin: 2px" size="mini">{{item.id}} - {{item.title}}</el-button>
-            </div>
-        </template>
+        <el-input v-model="words" placeholder="匹配关键词" style="width: 200px;margin: 2px"></el-input>
+        <el-button type="primary" icon="el-icon-loading">实时同步</el-button>
+        <div v-for="(item,index) in notices" :key="index">
+            <el-button style="margin: 2px" size="mini">{{item.id}} - {{item.title}}</el-button>
+        </div>
     </div>
 </template>
 
@@ -17,10 +17,11 @@
             return {
                 notices: [],
                 lastId: 0,
-                runIndex: ""
+                runIndex: "",
+                words: ""
             }
         },
-        created() {
+        mounted() {
             this.getNotices()
             this.runIndex = setInterval(() => {
                 this.getNotices()
@@ -59,7 +60,12 @@
                 this.notices = res.data.list
                 const lastId = this.notices[0].id
                 if (this.lastId > 1 && lastId > this.lastId) {
-                    alert("新的公告")
+                    if (this.words) {
+                        if (this.notices[0].title.includes(this.words))
+                            alert("新的相关公告")
+                    } else {
+                        alert("新的公告")
+                    }
                 }
                 this.lastId = lastId
             }

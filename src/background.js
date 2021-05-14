@@ -13,6 +13,7 @@ import {
 //   VUEJS_DEVTOOLS
 // } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+import {autoUpdater} from "electron-updater"
 
 const Store = require('electron-store');
 
@@ -51,6 +52,7 @@ async function createWindow() {
         createProtocol('app')
         // Load the index.html when not in development
         await win.loadURL('app://./index.html')
+        await autoUpdater.checkForUpdatesAndNotify()
     }
 }
 
@@ -131,8 +133,8 @@ const requestPost = async (optional, data, headers = []) => {
             let responseData = ""
             const request = net.request(optional)
             if (headers) {
-                headers.forEach((item)=>{
-                    request.setHeader(item[0],item[1])
+                headers.forEach((item) => {
+                    request.setHeader(item[0], item[1])
                 })
             }
 
