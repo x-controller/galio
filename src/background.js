@@ -3,16 +3,12 @@
 import {app, BrowserWindow, ipcMain, protocol} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import {autoUpdater} from "electron-updater"
-// import installExtension, {
-//   VUEJS_DEVTOOLS
-// } from 'electron-devtools-installer'
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
-const Store = require('electron-store');
+const Store = require('electron-store')
 
-const store = new Store();
-
-app.commandLine.appendSwitch('proxy-server', "http://127.0.0.1:54027")
+const store = new Store()
 
 const proxyUrl = store.get("proxyUrl")
 if (proxyUrl) {
@@ -35,6 +31,7 @@ async function createWindow() {
         height: 600,
         icon: "./src/assets/bitcoin.png",
         webPreferences: {
+            webSecurity: false,
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
             nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -74,14 +71,6 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-    if (isDevelopment && !process.env.IS_TEST) {
-        // Install Vue Devtools
-        try {
-            // await installExtension(VUEJS_DEVTOOLS)
-        } catch (e) {
-            console.error('Vue Devtools failed to install:', e.toString())
-        }
-    }
     await createWindow()
 })
 
