@@ -2,14 +2,21 @@
     <div>
         <el-input v-model="words" placeholder="匹配关键词" style="width: 200px;margin: 2px"></el-input>
 
-        <div style="margin: 5px">
-            <el-checkbox border v-model="loop" @change="changeSync">监听</el-checkbox>
-        </div>
+        <el-card v-for="(entry,index) in muskEntries" :key="index" style="max-width: 98%;margin: 5px 0;">
+            <div v-if="entry.content.items">
+                <div v-for="(item,key) in entry.content.items" :key="key">
+                    <el-button size="mini"
+                               :type="key===entry.content.items.length-1 ? 'danger':''"
 
-        <el-button style="margin: 2px;max-width: 95%;overflow: hidden" v-for="(item,index) in list.data" :key="index">
-            <div>{{item.content.full_text}}</div>
-            <span size="mini">{{item.content.created_at}}</span>
-        </el-button>
+                               v-if="item.item.itemContent.tweet">
+                        {{item.item.itemContent.tweet.legacy.full_text}}
+                    </el-button>
+                </div>
+            </div>
+            <el-button v-if="entry.content.itemContent" type="danger">
+                {{ entry.content.itemContent.tweet.legacy.full_text }}
+            </el-button>
+        </el-card>
     </div>
 </template>
 
@@ -20,19 +27,15 @@
         name: "MuskTwitter",
         data() {
             return {
-                loading: false,
-                list: [],
-                loop: false,
-                lastId: 0,
-                loopIndex: "",
+                muskEntries: helper.getData("muskEntries") || [],
                 words: ""
             }
         },
         created() {
-            this.getData()
         },
         methods: {
             changeSync(res) {
+                helper.setData("openWatchMusk", res)
                 if (res) {
                     this.loopIndex = setInterval(() => {
                         this.getData()
@@ -79,5 +82,11 @@
 </script>
 
 <style scoped>
-
+    .el-card .el-button {
+        text-align: left;
+        margin: 2px 0;
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
 </style>

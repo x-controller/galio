@@ -49,8 +49,8 @@ const request = (action, params = {}, method = 'get') => {
     return baseRequest[method](action, params)
 }
 
-const nodeRequestCustom = (optional) => {
-    return ipcRenderer.sendSync("requestGet", optional)
+const nodeRequestGet = (optional, headers = []) => {
+    return ipcRenderer.sendSync("requestGet", {optional, headers})
 }
 
 const nodeRequest = (action, params = {}, method = 'get') => {
@@ -72,7 +72,7 @@ const nodeRequest = (action, params = {}, method = 'get') => {
 }
 
 const nodeRequestPost = (optional, data, headers = []) => {
-    return ipcRenderer.sendSync("request-post", {
+    return ipcRenderer.sendSync("requestPost", {
         optional,
         data,
         headers
@@ -91,11 +91,11 @@ const delStorage = (name) => {
 }
 
 const getData = (name) => {
-    return ipcRenderer.sendSync('get-data', name)
+    return ipcRenderer.sendSync('getData', name)
 }
 
 const setData = async (name, value) => {
-    return ipcRenderer.sendSync('set-data', {name, value})
+    return ipcRenderer.sendSync('setData', {name, value})
 }
 
 export default {
@@ -109,6 +109,6 @@ export default {
     setStorageStr,
     getData,
     setData,
-    nodeRequestCustom,
+    nodeRequestGet,
     nodeRequestPost
 }

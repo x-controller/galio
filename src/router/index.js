@@ -9,6 +9,8 @@ export default new Router({
         {
             path: '', component: require('../views/Base').default, children: [
                 {path: '', name: 'index', component: require('../views/Index').default},
+                {path: 'wallet', name: 'wallet', component: require('../views/Wallet').default},
+                {path: 'note', name: 'note', component: require('../views/Note').default},
                 {path: 'blockIndex', name: 'blockIndex', component: require('../views/Block/Index').default},
                 {path: 'bookmark', name: 'bookmark', component: require('../views/Bookmark').default},
                 {path: 'symbol', name: 'symbol', component: require('../views/HuoBi/Symbol').default},

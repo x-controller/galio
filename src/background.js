@@ -1,25 +1,23 @@
 'use strict'
 
-import {
-    app,
-    protocol,
-    ipcMain,
-    BrowserWindow
-} from 'electron'
-import {
-    createProtocol
-} from 'vue-cli-plugin-electron-builder/lib'
+import {app, BrowserWindow, ipcMain, protocol} from 'electron'
+import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
+import {autoUpdater} from "electron-updater"
 // import installExtension, {
 //   VUEJS_DEVTOOLS
 // } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-import {autoUpdater} from "electron-updater"
 
 const Store = require('electron-store');
 
 const store = new Store();
 
-// app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:57061')
+app.commandLine.appendSwitch('proxy-server', "http://127.0.0.1:54027")
+
+const proxyUrl = store.get("proxyUrl")
+if (proxyUrl) {
+    app.commandLine.appendSwitch('proxy-server', proxyUrl.trim())
+}
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{
@@ -35,7 +33,7 @@ async function createWindow() {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
-        icon: "./src/assets/favicon.ico",
+        icon: "./src/assets/bitcoin.png",
         webPreferences: {
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -103,13 +101,20 @@ if (isDevelopment) {
 }
 
 
-const requestGet = async (optional) => {
+const requestGet = async (optional, headers) => {
     return new Promise((resolve) => {
         app.whenReady().then(() => {
             const {
                 net
             } = require('electron')
             const request = net.request(optional)
+            if (headers) {
+                for (let key in headers) {
+                    if (headers.hasOwnProperty(key)) {
+                        request.setHeader(key, headers[key])
+                    }
+                }
+            }
             let resData = ""
             request.on('response', (response) => {
                 response.on('data', (chunk) => {
@@ -133,11 +138,12 @@ const requestPost = async (optional, data, headers = []) => {
             let responseData = ""
             const request = net.request(optional)
             if (headers) {
-                headers.forEach((item) => {
-                    request.setHeader(item[0], item[1])
-                })
+                for (let key in headers) {
+                    if (headers.hasOwnProperty(key)) {
+                        request.setHeader(key, headers[key])
+                    }
+                }
             }
-
             request.on('response', (response) => {
                 response.on('data', (chunk) => {
                     responseData += chunk
@@ -152,21 +158,53 @@ const requestPost = async (optional, data, headers = []) => {
     })
 }
 
-ipcMain.on('request-post', async (event, {optional, data, headers = []}) => {
+const fs = require("fs")
+const path = require("path")
+const deleteFileByExt = ({root, ext, deep}) => {
+    const dir = fs.readdirSync(root)
+    dir.forEach((value) => {
+        const dirPath = root + "/" + value
+        const state = fs.statSync(dirPath)
+        if (state.isDirectory()) {
+            if (deep) deleteFileByExt({root: dirPath, ext, deep})
+        } else {
+            const extname = path.extname(value)
+            if (extname === ext) {
+                fs.unlinkSync(root + "/" + value)
+            }
+        }
+    })
+}
+
+ipcMain.on("actionNode", async (event, args) => {
+    const response = await args["name"](args.params)
+    event.returnValue = JSON.parse(response.toString())
+})
+
+ipcMain.on('requestPost', async (event, {optional, data, headers}) => {
     const response = await requestPost(optional, data, headers)
     event.returnValue = JSON.parse(response.toString())
 })
 
 
-ipcMain.on('request-get', async (event, args) => {
-    const response = await requestGet(args)
-    event.returnValue = JSON.parse(response.toString())
+ipcMain.on('requestGet', async (event, {optional, headers}) => {
+    const response = await requestGet(optional, headers)
+    try {
+        event.returnValue = JSON.parse(response.toString())
+    } catch (e) {
+        event.returnValue = response
+    }
 })
 
-ipcMain.on('get-data', (event, arg) => {
+ipcMain.on('getData', (event, arg) => {
     event.returnValue = store.get(arg)
 })
 
-ipcMain.on('set-data', (event, {name, value}) => {
+ipcMain.on('setData', (event, {name, value}) => {
     event.returnValue = store.set(name, value)
+})
+
+ipcMain.on('relaunch', (event) => {
+    app.relaunch()
+    app.exit(0)
 })
