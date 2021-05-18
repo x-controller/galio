@@ -1,7 +1,7 @@
 <template>
     <div>
         <div style="margin: 2px">
-            <el-card header="选择主网">
+            <el-card header="主网">
                 <el-button
                         v-for="(item,index) in networks" :key="index"
                         :plain="plainNetwork(item)"
@@ -11,6 +11,30 @@
             </el-card>
         </div>
 
+        <el-dialog :visible.sync="show.createContact">
+            <el-form v-model="form.createContact">
+                <el-form-item label="主网">
+                    <el-radio-group v-model="form.createContact.network">
+                        <el-radio-button
+                                v-for="(item,index) in networks" :key="index"
+                                :label="item">{{item.name}}
+                        </el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="名称">
+                    <el-input v-model="form.createContact.name"></el-input>
+                </el-form-item>
+                <el-form-item label="地址">
+                    <el-input v-model="form.createContact.address"></el-input>
+                </el-form-item>
+                <el-form-item label="abiCode">
+                    <el-input type="textarea" :row="2" v-model="form.createContact.abi"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button size="mini" type="danger">确定</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 
@@ -23,6 +47,8 @@
         name: "WalletDetail",
         data() {
             return {
+                show: {createContact: false},
+                form: {createContact: {}},
                 provider: {},
                 wallet: this.$route.params.wallet,
                 index: this.$router.params.index,

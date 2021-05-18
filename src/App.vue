@@ -11,13 +11,13 @@
                 <!--                <el-radio-button label="websocket">WS</el-radio-button>-->
                 <!--                <el-radio-button label="symbol">HB-SYMBOL</el-radio-button>-->
                 <!--                <el-radio-button label="blockIndex">BlockIndex</el-radio-button>-->
-                <!--                <el-radio-button label="bookmark">书签</el-radio-button>-->
+                <el-radio-button label="bookmark">书签</el-radio-button>
                 <el-radio-button label="huobiNotice">火币公告</el-radio-button>
                 <el-radio-button label="note">笔记</el-radio-button>
                 <el-radio-button label="wallet">钱包</el-radio-button>
+                <el-radio-button label="contractDev">合约开发</el-radio-button>
             </el-radio-group>
         </div>
-        <el-button @click="onTwitter">onTwitter</el-button>
         <router-view></router-view>
     </div>
 </template>
@@ -43,7 +43,7 @@
                     url: "https://twitter.com/i/api/graphql/2Kp5fEiA-6QtZoCKRCcGKg/UserTweetsAndReplies?variables=%7B%22userId%22%3A%2244196397%22%2C%22count%22%3A20%2C%22withHighlightedLabel%22%3Atrue%2C%22withTweetQuoteCount%22%3Atrue%2C%22includePromotedContent%22%3Atrue%2C%22withTweetResult%22%3Afalse%2C%22withReactions%22%3Afalse%2C%22withUserResults%22%3Afalse%2C%22withVoice%22%3Afalse%2C%22withNonLegacyCard%22%3Atrue%2C%22withBirdwatchPivots%22%3Afalse%7D",
                 }, {
                     // 'user-agent': 'mozilla/5.0 (windows nt 10.0; win64; x64; rv:88.0) gecko/20100101 firefox/88.0',
-                    "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36 Edg/90.0.818.56",
+                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36 Edg/90.0.818.56",
                     "accept": "application/json, text/plain, */*",
                     // "accept": "*/*",
                     "accept-language": "zh-cn,zh;q=0.8,zh-tw;q=0.7,zh-hk;q=0.5,en-us;q=0.3,en;q=0.2",
@@ -60,7 +60,7 @@
                     // "cache-control": "max-age=0",
                     // te: "trailers"
                 })
-                helper.setData("muskEntries",res.data.user.result.timeline.timeline.instructions[0].entries)
+                helper.setData("muskEntries", res.data.user.result.timeline.timeline.instructions[0].entries)
             },
             onPush(name) {
                 const route = this.$route.name

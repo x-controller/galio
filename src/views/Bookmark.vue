@@ -8,10 +8,10 @@
                 <el-form-item label="标题">
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
+                <el-form-item>
+                    <el-button type="danger" @click="onSave">确 定</el-button>
+                </el-form-item>
             </el-form>
-            <div slot="footer">
-                <el-button type="danger" @click="onSave">确 定</el-button>
-            </div>
         </el-dialog>
 
         <el-input v-model="searchStr" placeholder="搜索" style="margin: 5px;width: 200px"></el-input>
@@ -19,17 +19,11 @@
 
         <el-button size="mini">{{bookmarks.length}}</el-button>
 
-        <el-table style="height: 500px;overflow: auto" :data="searchResult" border size="mini">
-            <el-table-column v-slot="{row}" label="链接">
-                <el-button size="mini" @click="openUrl(row.url)">{{row.url}}</el-button>
-            </el-table-column>
-            <el-table-column v-slot="{row}" label="标题">
-                <span>{{row.title}}</span>
-            </el-table-column>
-            <el-table-column v-slot="{row}" label="操作">
-                <el-button size="mini" type="danger" @click="onRemove(row.url)" style="margin: 0 5px">删除</el-button>
-            </el-table-column>
-        </el-table>
+        <el-card v-for="(item,index) in searchResult" :key="index">
+            <el-button size="mini" v-if="item.title">{{item.title}}</el-button>
+            <el-button size="mini" @click="openUrl(item.url)">{{item.url}}</el-button>
+            <el-button size="mini" type="danger" @click="onRemove(item.url)">删除</el-button>
+        </el-card>
     </div>
 </template>
 
@@ -95,5 +89,12 @@
 </script>
 
 <style scoped>
+    /*样式穿透*/
+    .el-card >>> .el-card__body {
+        padding: 5px;
+    }
 
+    .el-card, .el-card .el-button {
+        margin: 2px;
+    }
 </style>

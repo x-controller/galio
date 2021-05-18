@@ -1,32 +1,24 @@
 <template>
     <div>
         <div style="margin: 2px">
-            <el-button size="mini" @click="create">添加</el-button>
-            <el-button size="mini" @click="show.import=true">导入</el-button>
+            <el-button size="mini" @click="show.create=true">添加</el-button>
+            <el-button size="mini" @click="show.importByPrivateKey=true">私钥导入</el-button>
+            <el-button size="mini" @click="show.importByMnemonic=true">助记词导入</el-button>
+            <el-button size="mini" @click="show.importByKeystore=true">keystore导入</el-button>
         </div>
 
         <el-card v-for="(wallet,index) in wallets" :key="index">
-            <div>
-                <el-button size="mini">{{wallet.name}}</el-button>
-            </div>
-            <div>
-                <el-button size="mini">{{wallet.address}}</el-button>
-            </div>
-            <div>
-                <el-button size="mini">{{wallet.privateKey}}</el-button>
-            </div>
-            <div v-if="wallet.mnemonic">
-                <el-button size="mini">{{wallet.mnemonic}}</el-button>
-            </div>
-            <div>
-                <el-button size="mini" @click="detail(wallet,index)">进入</el-button>
-                <el-button size="mini" type="danger" @click="onRemove(index)">删除</el-button>
-            </div>
+            <el-button size="mini">{{wallet.name}}</el-button>
+            <el-button size="mini">{{wallet.address}}</el-button>
+            <el-button size="mini">{{wallet.privateKey}}</el-button>
+            <el-button size="mini" v-if="wallet.mnemonic">{{wallet.mnemonic}}</el-button>
+            <el-button size="mini" @click="detail(wallet,index)">进入</el-button>
+            <el-button size="mini" type="danger" @click="onRemove(index)">删除</el-button>
         </el-card>
 
         <el-dialog title="创建" :visible.sync="show.create">
             <el-form v-model="form.create">
-                <el-form-item label="主链">
+                <el-form-item label="主网">
                     <el-radio-group v-model="form.create.network">
                         <el-radio-button
                                 v-for="(item,index) in networks" :key="index"
@@ -46,15 +38,76 @@
             </div>
         </el-dialog>
 
-        <el-dialog title="从私钥导入" :visible.sync="show.importByPrivateKey">
-            <el-form :model="form.import" autocomplete="off">
-                <el-form-item label="密钥">
-                    <el-input v-model="form.import.privateKey"></el-input>
+        <el-dialog title="从助记词导入" :visible.sync="show.importByMnemonic">
+            <el-form :model="form.importByMnemonic">
+                <el-form-item label="主网">
+                    <el-radio-group v-model="form.importByMnemonic.network">
+                        <el-radio-button v-for="(item,index) in networks" :key="index" :label="item">
+                            {{item.name}}
+                        </el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="名称">
+                    <el-input v-model="form.importByMnemonic.name"></el-input>
+                </el-form-item>
+                <el-form-item label="助记词">
+                    <el-input v-model="form.importByMnemonic.mnemonic"></el-input>
+                </el-form-item>
+                <el-form-item label="[密码]">
+                    <el-input v-model="form.importByMnemonic.password"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button size="mini" type="danger" @click="onImportByMnemonic">确定</el-button>
                 </el-form-item>
             </el-form>
-            <div slot="footer">
-                <el-button type="danger" @click="onImportByPrivateKey">确 定</el-button>
-            </div>
+        </el-dialog>
+
+        <el-dialog title="从私钥导入" :visible.sync="show.importByPrivateKey">
+            <el-form :model="form.importByPrivateKey">
+                <el-form-item label="主网">
+                    <el-radio-group v-model="form.importByMnemonic.network">
+                        <el-radio-button v-for="(item,index) in networks" :key="index" :label="item">
+                            {{item.name}}
+                        </el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="名称">
+                    <el-input v-model="form.importByPrivateKey.name"></el-input>
+                </el-form-item>
+                <el-form-item label="密钥">
+                    <el-input v-model="form.importByPrivateKey.privateKey"></el-input>
+                </el-form-item>
+                <el-form-item label="[密码]">
+                    <el-input v-model="form.importByMnemonic.password"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button size="mini" type="danger" @click="onImportByPrivateKey">确 定</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+        <el-dialog title="从keystore导入" :visible.sync="show.importByKeystore">
+            <el-form :model="form.importByKeystore">
+                <el-form-item label="主网">
+                    <el-radio-group v-model="form.importByKeystore.network">
+                        <el-radio-button v-for="(item,index) in networks" :key="index" :label="item">
+                            {{item.name}}
+                        </el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="名称">
+                    <el-input v-model="form.importByKeystore.name"></el-input>
+                </el-form-item>
+                <el-form-item label="keystore">
+                    <el-input type="textarea" :row="2" v-model="form.importByKeystore.keystore"></el-input>
+                </el-form-item>
+                <el-form-item label="[密码]">
+                    <el-input v-model="form.importByKeystore.password"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button size="mini" type="danger" @click="onImportByKeystore">确 定</el-button>
+                </el-form-item>
+            </el-form>
         </el-dialog>
 
         <el-dialog title="删除" :visible.sync="show.remove">
@@ -75,13 +128,12 @@
     import {ethers} from 'ethers'
 
     export default {
-        name: "Wallet",
         data() {
             return {
                 deleteIndex: 0,
                 wallets: helper.getData("wallets") || [],
-                show: {create: false, importByPrivateKey: false, importByJson: false, importByMnemonic: false},
-                form: {import: {}, importByJson: {}, create: {}},
+                show: {create: false, importByPrivateKey: false, importByKeystore: false, importByMnemonic: false},
+                form: {importByMnemonic: {}, importByPrivateKey: {}, importByKeystore: {}, create: {}},
                 networks: [
                     {
                         name: "ETH Mainnet",
@@ -115,6 +167,15 @@
             }
         },
         methods: {
+            // 检查名称是否存在(在导入和创建中都需要先检查)
+            checkNameExist(name) {
+                const wallets = helper.getData("wallets") || []
+                wallets.forEach(item => {
+                    if (item.name === name) return true
+                })
+                return false
+            },
+            // 加入到垃圾桶
             onTrash() {
                 const trashWallets = helper.getData("trashWallets") || []
                 trashWallets.unshift(this.wallets[this.deleteIndex])
@@ -122,77 +183,108 @@
                 helper.setData("wallets", this.wallets)
                 this.show.remove = false
             },
+            // 直接删除
             onDelete() {
                 this.wallets.splice(this.deleteIndex, 1)
                 helper.setData("wallets", this.wallets)
                 this.show.remove = false
             },
+            // 展示删除选项
             onRemove(index) {
                 this.show.remove = true
                 this.deleteIndex = index
             },
+            // 创建保存钱包
             async onCreate() {
+                if (this.checkNameExist(this.form.create.name)) {
+                    this.$message.error("钱包名称 " + this.form.create.name + " 已经存在")
+                    return false
+                }
+
                 const wallet = new ethers.Wallet.createRandom()
-                const newWallet = {
+                let newWallet = {
                     network: this.form.create.network,
                     address: wallet.address,
                     privateKey: wallet.privateKey,
                     mnemonic: wallet.mnemonic,
                     name: this.form.create.name,
-                    passwordHash: ethers.utils.keccak256("0x" + this.form.create.password)
                 }
                 if (this.form.create.password) {
+                    newWallet.passwordHash = ethers.utils.keccak256("0x" + this.form.create.password)
                     newWallet.keystore = await wallet.encrypt(this.form.create.password)
                 }
                 this.wallets.unshift(newWallet)
+                await helper.setData("wallets", this.wallets)
+                this.form.create = false
             },
-            onImportByJson() {
+            // 从keystone导入钱包
+            onImportByKeystore() {
                 const wallet = ethers.Wallet.fromEncryptedJson(
-                    this.from.importByJson.json
-                    , this.from.importByJson.password)
-                const newWallet = {
+                    this.from.importByKeystore.keystore
+                    , this.from.importByKeystore.password)
+                let newWallet = {
                     network: this.form.create.network,
                     address: wallet.address,
                     privateKey: wallet.privateKey,
                     mnemonic: wallet.mnemonic,
-                    name: this.form.importByJson.name,
-                    passwordHash: ethers.utils.keccak256("0x" + this.form.importByJson.password),
-                    keystore: JSON.parse(this.from.importByJson.json)
+                    name: this.form.importByKeystore.name,
+                    passwordHash: ethers.utils.keccak256("0x" + this.form.importByKeystore.password),
+                    keystore: JSON.parse(this.from.importByKeystore.keystore)
                 }
                 this.wallets.unshift(newWallet)
             },
-            onImportByPrivateKey() {
-                const wallet = new ethers.Wallet(this.form.import.privateKey)
-                this.wallets.unshift({
+            // 从助记词导入钱包
+            async onImportByMnemonic() {
+                const wallet = new ethers.Wallet.fromMnemonic(this.form.importByMnemonic.mnemonic)
+                let newWallet = {
+                    network: this.form.importByMnemonic.network,
+                    name: this.form.importByMnemonic.name,
                     address: wallet.address,
                     privateKey: wallet.privateKey,
-                })
-                helper.setData("wallets", this.wallets)
-                this.show.import = false
+                    mnemonic: wallet.mnemonic,
+                }
+
+                if (this.form.importByMnemonic.password) {
+                    newWallet.passwordHash = ethers.utils.keccak256("0x" + this.form.importByMnemonic.password)
+                    newWallet.keystore = await wallet.encrypt(this.form.importByMnemonic.password)
+                }
+
+                this.wallets.unshift(newWallet)
+                await helper.setData("wallets", this.wallets)
+                this.show.importByMnemonic = false
             },
+            // 从密钥导入钱包
+            async onImportByPrivateKey() {
+                const wallet = new ethers.Wallet(this.form.importByPrivateKey.privateKey)
+                let newWallet = {
+                    name: this.form.importByPrivateKey.name,
+                    network: this.form.importByPrivateKey.network,
+                    address: wallet.address,
+                    privateKey: wallet.privateKey,
+                }
+
+                if (this.form.importByPrivateKey.password) {
+                    newWallet.passwordHash = ethers.utils.keccak256("0x" + this.form.importByPrivateKey.password)
+                    newWallet.keystore = await wallet.encrypt(this.form.importByPrivateKey.password)
+                }
+
+                this.wallets.unshift(newWallet)
+                await helper.setData("wallets", this.wallets)
+                this.show.importByPrivateKey = false
+            },
+            // 进入详情
             detail(wallet, index) {
                 this.$router.push({name: "walletDetail", params: {wallet, index}})
             },
-            create() {
-                const wallet = ethers.Wallet.createRandom()
-                this.wallets.unshift({
-                    address: wallet.address,
-                    privateKey: wallet.privateKey,
-                    mnemonic: wallet.mnemonic
-                })
-                helper.setData("wallets", this.wallets)
-            },
-            remove(index) {
-                this.$confirm("确认删除吗?").then(_ => {
-                    this.wallets.splice(index, 1)
-                    this.setData("wallets", this.wallets)
-                }).catch()
-            }
         }
     }
 </script>
 
 <style scoped>
+    .el-card >>> .el-card__body {
+        padding: 5px;
+    }
+
     .el-button {
         margin: 2px 0
     }
