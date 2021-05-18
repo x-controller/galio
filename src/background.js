@@ -118,7 +118,7 @@ const requestGet = async (optional, headers) => {
     })
 }
 
-const requestPost = async (optional, data, headers = []) => {
+const requestPost = async (optional, data, headers = {}) => {
     return new Promise((resolve) => {
         app.whenReady().then(() => {
             const {

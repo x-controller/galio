@@ -10,7 +10,7 @@
     export default {
         data() {
             return {
-                contractAddress: "",
+                address: "",
                 provider: ethers.getDefaultProvider(),
                 contract: {},
                 abi: ""
@@ -24,7 +24,7 @@
                 this.provider = ethers.getDefaultProvider()
             },
             connectContact() {
-                this.contract = new ethers.Contract(this.contractAddress, this.abi, this.provider)
+                this.contract = new ethers.Contract(this.address, this.abi, this.provider)
             },
             async requestContact(method, params) {
                 const result = await this.contract[method](...params)

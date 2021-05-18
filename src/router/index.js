@@ -9,6 +9,9 @@ export default new Router({
         {
             path: '', component: require('../views/Base').default, children: [
                 {path: '', name: 'index', component: require('../views/Index').default},
+                {path: 'contract', name: 'contract', component: require('../views/Contract').default},
+                {path: 'trashWallet', name: 'trashWallet', component: require('../views/TrashWallet').default},
+                {path: 'walletDetail', name: 'walletDetail', component: require('../views/WalletDetail').default},
                 {path: 'wallet', name: 'wallet', component: require('../views/Wallet').default},
                 {path: 'note', name: 'note', component: require('../views/Note').default},
                 {path: 'blockIndex', name: 'blockIndex', component: require('../views/Block/Index').default},

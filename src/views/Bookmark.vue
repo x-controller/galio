@@ -15,7 +15,7 @@
         </el-dialog>
 
         <el-input v-model="searchStr" placeholder="搜索" style="margin: 5px;width: 200px"></el-input>
-        <el-button size="mini" @click="show.create = true">添加书签</el-button>
+        <el-button size="mini" @click="show.create = true">添加</el-button>
 
         <el-button size="mini">{{bookmarks.length}}</el-button>
 
