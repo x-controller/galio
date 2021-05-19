@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const {ipcRenderer} = require('electron')
+const {ipcRenderer, clipboard} = require('electron')
 
 
 const baseRequest = axios.create({
@@ -98,6 +98,14 @@ const setData = async (name, value) => {
     return ipcRenderer.sendSync('setData', {name, value})
 }
 
+const clipboardWrite = (value) => {
+    clipboard.writeText(value)
+}
+
+const clipboardRead = () => {
+    clipboard.readText()
+}
+
 export default {
     uuid,
     delStorage,
@@ -110,5 +118,7 @@ export default {
     getData,
     setData,
     nodeRequestGet,
-    nodeRequestPost
+    nodeRequestPost,
+    clipboardWrite,
+    clipboardRead
 }

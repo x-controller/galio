@@ -19,11 +19,27 @@
 
         <el-button size="mini">{{bookmarks.length}}</el-button>
 
-        <el-card v-for="(item,index) in searchResult" :key="index">
-            <el-button size="mini" v-if="item.title">{{item.title}}</el-button>
-            <el-button size="mini" @click="openUrl(item.url)">{{item.url}}</el-button>
-            <el-button size="mini" type="danger" @click="onRemove(item.url)">删除</el-button>
-        </el-card>
+        <el-row>
+            <el-col :span="12">
+                <el-card header="书签">
+                    <el-card v-for="(item,index) in searchResult" :key="index">
+                        <el-button size="mini" v-if="item.title">{{item.title}}</el-button>
+                        <el-button size="mini" @click="openUrl(item)">{{item.url}}</el-button>
+                        <el-button size="mini" type="danger" @click="onRemove(item.url)">删除</el-button>
+                    </el-card>
+                </el-card>
+            </el-col>
+            <el-col :span="12">
+                <el-card header="历史">
+                    <el-card v-for="(item,index) in logs" :key="index">
+                        <el-button size="mini" v-if="item.title">{{item.title}}</el-button>
+                        <el-button size="mini" @click="openUrl(item)">{{item.url}}</el-button>
+                    </el-card>
+                </el-card>
+            </el-col>
+        </el-row>
+
+
     </div>
 </template>
 
@@ -36,11 +52,9 @@
         data() {
             return {
                 bookmarks: helper.getData("bookmarks") || [],
-                params: {page: 0, pageSize: 20},
+                logs: helper.getData("viewLogs") || [],
                 show: {create: false},
                 form: {},
-                group: {},
-                pageData: [],
                 searchStr: ""
             }
         },
@@ -64,8 +78,10 @@
                 })
                 helper.setData("bookmarks", this.bookmarks)
             },
-            openUrl(url) {
-                shell.openExternal(url)
+            openUrl(bookmark) {
+                shell.openExternal(bookmark.url)
+                this.logs.unshift(bookmark)
+                helper.setData("viewLogs", this.logs)
             },
             onSave() {
                 if (!this.form.url) {

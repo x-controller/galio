@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div>
+        <div class="action-box">
             <el-button @click="accountCreate">创建账号 {{accounts.length}}</el-button>
             <el-button @click="show.transfer=true">转账</el-button>
             <el-button @click="show.callContract=true">调用合约</el-button>
@@ -19,8 +19,8 @@
 
         <el-card header="账号">
             <el-card v-for="(account,index) in accounts" :key="index">
-                <el-button size="mini">{{account.address}}</el-button>
-                <el-button size="mini">{{account.privateKey}}</el-button>
+                <el-button size="mini" @click="onClipboard(account.address)">{{account.address}}</el-button>
+                <el-button size="mini" @click="onClipboard(account.privateKey)">{{account.privateKey}}</el-button>
                 <el-button size="mini" v-if="0 && account.mnemonic">{{account.mnemonic}}</el-button>
                 <el-button size="mini">{{account.balance||0}}</el-button>
             </el-card>
@@ -260,6 +260,10 @@
             }
         },
         methods: {
+            onClipboard(value){
+                helper.clipboardWrite(value)
+                this.$notify.success("已复制")
+            },
             onImportPrivateKey() {
                 const account = new ethers.Wallet(this.form.importPrivateKey.privateKey)
                 this.accounts.unshift({

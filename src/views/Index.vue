@@ -1,7 +1,5 @@
 <template>
     <div>
-
-
         <div v-if="user">
             <el-button>{{user.username}}</el-button>
             <el-button @click="logout">注销</el-button>
@@ -20,6 +18,8 @@
             <el-button size="mini" @click="clearDesktopIcon">清空桌面图标</el-button>
         </div>
 
+        <el-button size="mini" v-if="onLine">online</el-button>
+
     </div>
 </template>
 
@@ -33,7 +33,8 @@
         data() {
             return {
                 user: helper.getStorage("user"),
-                proxyUrl: helper.getData("proxyUrl")
+                proxyUrl: helper.getData("proxyUrl"),
+                onLine:navigator.onLine
             }
         },
         created() {
