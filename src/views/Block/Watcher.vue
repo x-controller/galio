@@ -1,6 +1,10 @@
 <template>
     <div>
-
+        <el-card header="主网">
+            <el-card v-for="(network,index) in networks" :key="index" :header="network.name" style="width: 200px">
+                <el-checkbox v-model="status[network.name]">监听</el-checkbox>
+            </el-card>
+        </el-card>
     </div>
 </template>
 
@@ -14,8 +18,23 @@
             return {
                 networks: helper.getData("networks") || [],
                 providers: {},
-                ws: new WebSocket("127.0.0.1:8199")
+                ws: new WebSocket("127.0.0.1:8199"),
+                status: {}
                 // socket: io('ws://127.0.0.1:8199/ws', {transports: ["websocket"]})
+            }
+        },
+        watch: {
+            status: (val) => {
+                Object.keys(val).forEach(key => {
+                    if (val[key]) {
+                        const network = this.networks.find(item => item.name === key)
+                        this.providers[key] = new ethers.providers.JsonRpcProvider(network.url)
+                        this.onStartTransfer(this.providers[key])
+                        this.onStartToken(this.providers[key])
+                    } else {
+                        this.providers[key] = null
+                    }
+                })
             }
         },
         created() {
@@ -37,11 +56,11 @@
                 this.$notify.error(e.message)
             }
 
-            // this.startWatchers()
+            this.onStartToken()
+            this.onStartTransfer()
         },
         methods: {
             async onStartTransfer(provider) {
-                provider = ethers.getDefaultProvider()
                 const network = await provider.getNetwork()
                 provider.on("block", blockNumber => {
                     provider.getBlockWithTransactions(blockNumber).then(block => {
@@ -63,19 +82,26 @@
                     })
                 })
             },
-            onStartToken(provider) {
-                provider = ethers.getDefaultProvider()
+            async onStartToken(provider) {
+                const network = await provider.getNetwork()
                 const filter = {
                     topics: [
                         ethers.utils.id('Transfer(address,address,uint256)')
                     ]
                 }
                 provider.on(filter, async log => {
+                    const abiCoder = new ethers.utils.AbiCoder()
+                    const result = abiCoder.decode(["address", "address", "uint"], log.data)
                     const symbol = await this.getTokenSymbol(log.address)
                     this.ws.send(JSON.stringify({
                         action: 'save-transaction',
                         data: {
+                            from: result[0],
+                            to: result[1],
+                            amount: result[2],
                             symbol,
+                            contract: log.address,
+                            network: network.name,
                             type: "contract-transfer"
                         }
                     }))
@@ -89,11 +115,17 @@
                 const token = new ethers.Contract(address, abi, provider)
                 return await token.symbol()
             },
-            watchContract(contract) {
+            addressContractTransfer(contract) {
+                let ABI = [
+                    "event Transfer(address from, address to, uint amount)",
+                    "function transfer(address to, uint amount)",
+                    "function symbol() view returns (string)"
+                ]
                 let provider = ethers.getDefaultProvider()
-                contract = new ethers.Contract("address", "abi", provider)
-                let filter = contract.Transfer(null, "myAddress")
+                contract = new ethers.Contract("address", ABI, provider)
+                contract.on("Transfer(address,address,uint)", (from, to, amount, event) => {
 
+                })
             }
         }
     }
