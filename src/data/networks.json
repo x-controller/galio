@@ -1,0 +1,37 @@
+[
+  {
+    "name": "ETH Mainnet",
+    "url": "https://mainnet.infura.io/v3/fddb1d98064647dd8bce19afb8b48059",
+    "chainId": "1",
+    "symbol": "ETH",
+    "scanUrl": "https://etherscan.io"
+  },
+  {
+    "name": "BSC Mainnet",
+    "url": "https://bsc-dataseed.binance.org",
+    "chainId": "56",
+    "symbol": "BNB",
+    "scanUrl": "https://bscscan.com"
+  },
+  {
+    "name": "Heco Mainnet",
+    "url": "https://http-mainnet-node.huobichain.com",
+    "chainId": "128",
+    "symbol": "HT",
+    "scanUrl": "https://hecoinfo.com"
+  },
+  {
+    "name": "QK Mainnet",
+    "url": "http://sg.node.quarkblockchain.org",
+    "chainId": "20181205",
+    "symbol": "QKI",
+    "scanUrl": "https://quarkscout.com"
+  },
+  {
+    "name": "Local",
+    "url": "http://127.0.0.1:7545",
+    "chainId": "1337",
+    "symbol": "ETH",
+    "scanUrl": ""
+  }
+]
