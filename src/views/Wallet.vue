@@ -1,18 +1,21 @@
 <template>
     <div>
         <div style="margin: 2px">
-            <el-button size="mini" @click="show.create=true">添加</el-button>
+            <el-button size="mini" @click="show.create=true">创建</el-button>
             <el-button size="mini" @click="show.importByPrivateKey=true">私钥导入</el-button>
             <el-button size="mini" @click="show.importByMnemonic=true">助记词导入</el-button>
             <el-button size="mini" @click="show.importByKeystore=true">keystore导入</el-button>
+            <el-button size="mini" @click="show.createContact=true">添加Token</el-button>
+            <el-button size="mini" @click="show.contracts=true">全部Token</el-button>
+
         </div>
 
         <el-card v-for="(wallet,index) in wallets" :key="index">
-            <el-button size="mini">{{wallet.name}}</el-button>
-            <el-button size="mini">{{wallet.address}}</el-button>
-            <el-button size="mini">{{wallet.privateKey}}</el-button>
-            <el-button size="mini" v-if="wallet.mnemonic">{{wallet.mnemonic}}</el-button>
-            <el-button size="mini" @click="detail(wallet,index)">进入</el-button>
+            <el-button size="mini">名称 {{wallet.name}}</el-button>
+            <el-button size="mini" @click="clipboard(wallet.address)">地址 {{wallet.address}}</el-button>
+            <el-button size="mini">密钥 {{wallet.privateKey}}</el-button>
+            <el-button size="mini" v-if="wallet.mnemonic">助记词 {{wallet.mnemonic}}</el-button>
+            <el-button size="mini" @click="detail(wallet)">进入</el-button>
             <el-button size="mini" type="danger" @click="onRemove(index)">删除</el-button>
         </el-card>
 
@@ -32,10 +35,11 @@
                 <el-form-item label="密码">
                     <el-input type="password" v-model="form.create.password"></el-input>
                 </el-form-item>
+                <el-form-item>
+                    <el-button type="danger" @click="onCreate">确 定</el-button>
+
+                </el-form-item>
             </el-form>
-            <div slot="footer">
-                <el-button type="danger" @click="onCreate">确 定</el-button>
-            </div>
         </el-dialog>
 
         <el-dialog title="从助记词导入" :visible.sync="show.importByMnemonic">
@@ -65,7 +69,7 @@
         <el-dialog title="从私钥导入" :visible.sync="show.importByPrivateKey">
             <el-form :model="form.importByPrivateKey">
                 <el-form-item label="主网">
-                    <el-radio-group v-model="form.importByMnemonic.network">
+                    <el-radio-group v-model="form.importByPrivateKey.network">
                         <el-radio-button v-for="(item,index) in networks" :key="index" :label="item">
                             {{item.name}}
                         </el-radio-button>
@@ -78,7 +82,7 @@
                     <el-input v-model="form.importByPrivateKey.privateKey"></el-input>
                 </el-form-item>
                 <el-form-item label="[密码]">
-                    <el-input v-model="form.importByMnemonic.password"></el-input>
+                    <el-input type="password" v-model="form.importByPrivateKey.password"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button size="mini" type="danger" @click="onImportByPrivateKey">确 定</el-button>
@@ -111,15 +115,39 @@
         </el-dialog>
 
         <el-dialog title="删除" :visible.sync="show.remove">
-            <span>
-                放回回收站可以恢复
-            </span>
-            <span slot="footer">
-                <el-button size="mini" type="warming" @click="onTrash">放入回收站</el-button>
-                <el-button size="mini" type="primary" @click="onDelete">立即删除</el-button>
-              </span>
+            <el-button size="mini">放入回收站可以恢复</el-button>
+            <el-button size="mini" type="warming" @click="onTrash">放入回收站</el-button>
+            <el-button size="mini" type="primary" @click="onDelete">立即删除</el-button>
         </el-dialog>
 
+        <el-dialog title="添加Token" :visible.sync="show.createContact">
+            <el-form v-model="form.contract">
+                <el-form-item label="主网">
+                    <el-radio-group v-model="form.contract.network">
+                        <el-radio-button
+                                v-for="(item,index) in networks" :key="index"
+                                :label="item">{{item.name}}
+                        </el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="地址">
+                    <el-input v-model="form.contract.address"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="danger" @click="onSaveContract">确 定</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+        <el-dialog title="Token" :visible.sync="show.contracts">
+            <el-card v-for="(token,index) in contracts" :key="index">
+                <el-button size="mini">主网 {{token.network.name}}</el-button>
+                <el-button size="mini">Name {{token.name}}</el-button>
+                <el-button size="mini">Symbol {{token.symbol}}</el-button>
+                <el-button size="mini">Decimals {{token.decimals}}</el-button>
+                <el-button size="mini">地址 {{token.address}}</el-button>
+            </el-card>
+        </el-dialog>
     </div>
 </template>
 
@@ -130,10 +158,13 @@
     export default {
         data() {
             return {
-                deleteIndex: 0,
+                index: {delete: 0},
                 wallets: helper.getData("wallets") || [],
-                show: {create: false, importByPrivateKey: false, importByKeystore: false, importByMnemonic: false},
-                form: {importByMnemonic: {}, importByPrivateKey: {}, importByKeystore: {}, create: {}},
+                show: {
+                    create: false, importByPrivateKey: false, importByKeystore: false, importByMnemonic: false,
+                    createContact: false, contracts: false, remove: false
+                },
+                form: {importByMnemonic: {}, importByPrivateKey: {}, importByKeystore: {}, create: {}, contract: {}},
                 networks: [
                     {
                         name: "ETH Mainnet",
@@ -163,10 +194,17 @@
                         symbol: "QKI",
                         scanUrl: "https://quarkscout.com"
                     },
-                ]
+                ],
+                contracts: helper.getData("contracts") || []
             }
         },
+        created() {
+        },
         methods: {
+            clipboard(value) {
+                helper.clipboardWrite(value)
+                this.$notify.success("复制完成")
+            },
             // 检查名称是否存在(在导入和创建中都需要先检查)
             checkNameExist(name) {
                 const wallets = helper.getData("wallets") || []
@@ -178,21 +216,21 @@
             // 加入到垃圾桶
             onTrash() {
                 const trashWallets = helper.getData("trashWallets") || []
-                trashWallets.unshift(this.wallets[this.deleteIndex])
-                this.wallets.splice(this.deleteIndex, 1)
+                trashWallets.unshift(this.wallets[this.index.delete])
+                this.wallets.splice(this.index.delete, 1)
                 helper.setData("wallets", this.wallets)
                 this.show.remove = false
             },
             // 直接删除
             onDelete() {
-                this.wallets.splice(this.deleteIndex, 1)
+                this.wallets.splice(this.index.delete, 1)
                 helper.setData("wallets", this.wallets)
                 this.show.remove = false
             },
             // 展示删除选项
             onRemove(index) {
                 this.show.remove = true
-                this.deleteIndex = index
+                this.index.delete = index
             },
             // 创建保存钱包
             async onCreate() {
@@ -200,8 +238,7 @@
                     this.$message.error("钱包名称 " + this.form.create.name + " 已经存在")
                     return false
                 }
-
-                const wallet = new ethers.Wallet.createRandom()
+                const wallet = ethers.Wallet.createRandom()
                 let newWallet = {
                     network: this.form.create.network,
                     address: wallet.address,
@@ -216,6 +253,7 @@
                 this.wallets.unshift(newWallet)
                 await helper.setData("wallets", this.wallets)
                 this.form.create = false
+                this.show.create = false
             },
             // 从keystone导入钱包
             onImportByKeystore() {
@@ -272,9 +310,30 @@
                 await helper.setData("wallets", this.wallets)
                 this.show.importByPrivateKey = false
             },
-            // 进入详情
-            detail(wallet, index) {
-                this.$router.push({name: "walletDetail", params: {wallet, index}})
+            // 钱包详情
+            detail(wallet) {
+                this.$router.push({name: "walletDetail", params: {wallet}})
+            },
+            // 保存合约
+            async onSaveContract() {
+                const contract = this.form.contract
+                const provider = new ethers.providers.JsonRpcProvider(contract.network.url)
+                const abi = [
+                    "function balanceOf(address owner) view returns (uint256)",
+                    "function decimals() view returns (uint8)",
+                    "function symbol() view returns (string)",
+                    "function name() view returns (string)",
+                    "function transfer(address to, uint amount) returns (boolean)",
+                    "event Transfer(address indexed from, address indexed to, uint amount)"
+                ]
+                const token = new ethers.Contract(contract.address, abi, provider);
+                contract.symbol = await token.symbol()
+                contract.name = await token.name()
+                contract.decimals = await token.decimals()
+                this.contracts.unshift(contract)
+                await helper.setData("contracts", this.contracts)
+                this.show.createContact = false
+                this.form.contract = {}
             },
         }
     }

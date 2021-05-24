@@ -1,8 +1,8 @@
 <template>
-    <div style="margin: 10px;height: 500px;overflow: auto">
-        <el-table :data="symbol" border>
-            <el-table-column label="symbol" prop="symbol"></el-table-column>
-        </el-table>
+    <div>
+        <el-button v-for="(item,index) in symbol" :key="index">
+            {{item.symbol}}
+        </el-button>
     </div>
 </template>
 
@@ -20,7 +20,6 @@
             getData() {
                 fetch("https://api.huobi.pro/v1/common/symbols").then(response => response.json())
                     .then(myJson => {
-                        console.log(myJson.data)
                         this.symbol = myJson.data
                     })
             }

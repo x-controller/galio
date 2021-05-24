@@ -1,21 +1,22 @@
 'use strict'
 
-import {app, BrowserWindow, ipcMain, protocol} from 'electron'
+// https://www.electronjs.org/docs/api
+import {app, BrowserWindow, ipcMain, protocol, session} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import {autoUpdater} from "electron-updater"
+import da from "element-ui/src/locale/lang/da";
 
+const fs = require("fs")
+const path = require("path")
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
 const Store = require('electron-store')
-
 const store = new Store()
-
 const proxyUrl = store.get("proxyUrl")
+
 if (proxyUrl) {
     app.commandLine.appendSwitch('proxy-server', proxyUrl.trim())
 }
 
-// Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{
     scheme: 'app',
     privileges: {
@@ -27,8 +28,8 @@ protocol.registerSchemesAsPrivileged([{
 async function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1800,
+        height: 1200,
         icon: "./src/assets/bitcoin.png",
         webPreferences: {
             webSecurity: false,
@@ -39,10 +40,11 @@ async function createWindow() {
         }
     })
 
+
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
         await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-        // if (!process.env.IS_TEST) win.webContents.openDevTools()
+        win.webContents.openDevTools()
     } else {
         createProtocol('app')
         // Load the index.html when not in development
@@ -51,7 +53,6 @@ async function createWindow() {
     }
 }
 
-// Quit when all windows are closed.
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
@@ -67,14 +68,21 @@ app.on('activate', () => {
     })
 })
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
+    // await session.defaultSession.loadExtension(
+    //     path.join(__dirname, "extensions/metamask/9.4.0_0"),
+    //     {allowFileAccess: true}
+    // )
+
+    if (isDevelopment) {
+        await session.defaultSession.loadExtension(
+            path.join(__dirname, "extensions/vueDevTool/5.3.4_0"),
+            {allowFileAccess: true}
+        )
+    }
     await createWindow()
 })
 
-// Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
     if (process.platform === 'win32') {
         process.on('message', (data) => {
@@ -88,7 +96,6 @@ if (isDevelopment) {
         })
     }
 }
-
 
 const requestGet = async (optional, headers) => {
     return new Promise((resolve) => {
@@ -147,8 +154,6 @@ const requestPost = async (optional, data, headers = {}) => {
     })
 }
 
-const fs = require("fs")
-const path = require("path")
 const deleteFileByExt = ({root, ext, deep}) => {
     const dir = fs.readdirSync(root)
     dir.forEach((value) => {
@@ -165,16 +170,49 @@ const deleteFileByExt = ({root, ext, deep}) => {
     })
 }
 
+// https://www.electronjs.org/docs/api/session#sessetproxyconfig
+const onSetProxy = async (config) => {
+    await session.defaultSession.setProxy(config)
+}
+
+const dataUpdate = ({name, item, primary}) => {
+    const data = store.get(name) || []
+    let index = 0
+    data.forEach((value, _index) => {
+        if (value[primary] === item[primary]) index = _index
+    })
+    data.splice(index, 1, item)
+    store.set(name, data)
+}
+
+const dataDel = ({name, value, primary}) => {
+    const data = store.get(name) || []
+    let index = 0
+    data.forEach((item, _index) => {
+        if (item[primary] === value) index = _index
+    })
+    data.splice(index, 1)
+    store.set(name, data)
+}
+
+const actions = {
+    dataUpdate,
+    dataDel,
+    onSetProxy,
+    requestGet,
+    requestPost
+}
+
 ipcMain.on("actionNode", async (event, args) => {
-    const response = await args["name"](args.params)
-    event.returnValue = JSON.parse(response.toString())
+    let response = null
+    response = actions[args.name](args.params)
+    event.returnValue = response
 })
 
 ipcMain.on('requestPost', async (event, {optional, data, headers}) => {
     const response = await requestPost(optional, data, headers)
     event.returnValue = JSON.parse(response.toString())
 })
-
 
 ipcMain.on('requestGet', async (event, {optional, headers}) => {
     const response = await requestGet(optional, headers)

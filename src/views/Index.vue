@@ -8,14 +8,10 @@
             <el-button @click="$router.push({name:'login'})">登录</el-button>
         </div>
 
-        <div style="margin: 2px">
+        <div class="set-proxy" style="margin: 2px">
             <el-input v-model="proxyUrl" label="设置代理" style="width: 200px"
                       placeholder="http://127.0.0.1:54027"></el-input>
-            <el-button @click="setProxy" style="margin: 0 2px">设置代理</el-button>
-        </div>
-
-        <div style="margin: 2px">
-            <el-button size="mini" @click="clearDesktopIcon">清空桌面图标</el-button>
+            <el-button @click="setProxyNew" style="margin: 0 2px">设置代理</el-button>
         </div>
 
         <el-button size="mini" v-if="onLine">online</el-button>
@@ -34,7 +30,7 @@
             return {
                 user: helper.getStorage("user"),
                 proxyUrl: helper.getData("proxyUrl"),
-                onLine:navigator.onLine
+                onLine: navigator.onLine
             }
         },
         created() {
@@ -54,6 +50,14 @@
                     helper.setData("proxyUrl", this.proxyUrl)
                     ipcRenderer.send("relaunch")
                 }).catch()
+            },
+            setProxyNew() {
+                ipcRenderer.send("actionNode", {
+                    name: "onSetProxy",
+                    params: {
+                        proxyRules: this.proxyUrl
+                    }
+                })
             },
             getHuoBi() {
                 if (this.proxyUrl) {

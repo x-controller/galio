@@ -3,7 +3,7 @@
         <el-input v-model="words" placeholder="匹配关键词" style="width: 200px;margin: 2px"></el-input>
         <el-button type="primary" icon="el-icon-loading">实时同步</el-button>
         <div v-for="(item,index) in notices" :key="index">
-            <el-button style="margin: 2px" size="mini">{{item.id}} - {{item.title}}</el-button>
+            <el-button style="margin: 2px" size="mini">{{item.title}}</el-button>
         </div>
     </div>
 </template>

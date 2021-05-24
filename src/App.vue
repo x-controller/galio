@@ -81,12 +81,15 @@
                 // })
                 // console.log(res)
                 if (helper.getData("proxyUrl")) {
-                    this.index.musk = setInterval(() => {
-                        const openWatchMusk = helper.getData("openWatchMusk")
-                        if (openWatchMusk) {
-                            console.log('123')
-                        }
-                    }, 1000 * 60)
+                    const status = helper.getData("muskTwitterWatch")
+                    if (status){
+                        this.index.musk = setInterval(() => {
+                            const openWatchMusk = helper.getData("openWatchMusk")
+                            if (openWatchMusk) {
+                                console.log('123')
+                            }
+                        }, 1000 * 60)
+                    }
                 }
             }
         }

@@ -106,6 +106,10 @@ const clipboardRead = () => {
     clipboard.readText()
 }
 
+const actionNode = (name, params) => {
+    ipcRenderer.send("actionNode", {name, params})
+}
+
 export default {
     uuid,
     delStorage,
@@ -120,5 +124,6 @@ export default {
     nodeRequestGet,
     nodeRequestPost,
     clipboardWrite,
-    clipboardRead
+    clipboardRead,
+    actionNode
 }
