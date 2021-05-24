@@ -1,6 +1,7 @@
 <template>
     <div>
         <div style="margin: 2px">
+            <el-button size="mini" @click="$router.push({name:'wallet'})">钱包列表</el-button>
             <el-card header="主网">
                 <el-button
                         v-for="(item,index) in networks" :key="index"

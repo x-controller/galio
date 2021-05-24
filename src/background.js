@@ -4,7 +4,6 @@
 import {app, BrowserWindow, ipcMain, protocol, session} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import {autoUpdater} from "electron-updater"
-import da from "element-ui/src/locale/lang/da";
 
 const fs = require("fs")
 const path = require("path")
@@ -97,7 +96,7 @@ if (isDevelopment) {
     }
 }
 
-const requestGet = async (optional, headers) => {
+const requestGet = async ({optional, headers}) => {
     return new Promise((resolve) => {
         app.whenReady().then(() => {
             const {
@@ -125,7 +124,7 @@ const requestGet = async (optional, headers) => {
     })
 }
 
-const requestPost = async (optional, data, headers = {}) => {
+const requestPost = async ({optional, data, headers = {}}) => {
     return new Promise((resolve) => {
         app.whenReady().then(() => {
             const {
@@ -195,27 +194,32 @@ const dataDel = ({name, value, primary}) => {
     store.set(name, data)
 }
 
+const dataUnshift = ({name, item}) => {
+    const data = store.get(name) || []
+    data.unshift(item)
+    store.set(name, data)
+}
+
 const actions = {
+    dataUnshift,
     dataUpdate,
     dataDel,
     onSetProxy,
     requestGet,
-    requestPost
+    requestPost,
 }
 
-ipcMain.on("actionNode", async (event, args) => {
-    let response = null
-    response = actions[args.name](args.params)
-    event.returnValue = response
+ipcMain.on("actionNode", (event, args) => {
+    event.returnValue = actions[args.name](args.params)
 })
 
 ipcMain.on('requestPost', async (event, {optional, data, headers}) => {
-    const response = await requestPost(optional, data, headers)
+    const response = await requestPost({optional, data, headers})
     event.returnValue = JSON.parse(response.toString())
 })
 
 ipcMain.on('requestGet', async (event, {optional, headers}) => {
-    const response = await requestGet(optional, headers)
+    const response = await requestGet({optional, headers})
     try {
         event.returnValue = JSON.parse(response.toString())
     } catch (e) {
