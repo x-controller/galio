@@ -55,10 +55,10 @@
                     <el-input v-model="form.importByMnemonic.name"></el-input>
                 </el-form-item>
                 <el-form-item label="助记词">
-                    <el-input v-model="form.importByMnemonic.mnemonic"></el-input>
+                    <el-input  type="password" v-model="form.importByMnemonic.mnemonic"></el-input>
                 </el-form-item>
                 <el-form-item label="[密码]">
-                    <el-input v-model="form.importByMnemonic.password"></el-input>
+                    <el-input type="password" v-model="form.importByMnemonic.password"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button size="mini" type="danger" @click="onImportByMnemonic">确定</el-button>
@@ -79,7 +79,7 @@
                     <el-input v-model="form.importByPrivateKey.name"></el-input>
                 </el-form-item>
                 <el-form-item label="密钥">
-                    <el-input v-model="form.importByPrivateKey.privateKey"></el-input>
+                    <el-input  type="password" v-model="form.importByPrivateKey.privateKey"></el-input>
                 </el-form-item>
                 <el-form-item label="[密码]">
                     <el-input type="password" v-model="form.importByPrivateKey.password"></el-input>
@@ -106,7 +106,7 @@
                     <el-input type="textarea" :row="2" v-model="form.importByKeystore.keystore"></el-input>
                 </el-form-item>
                 <el-form-item label="[密码]">
-                    <el-input v-model="form.importByKeystore.password"></el-input>
+                    <el-input type="password" v-model="form.importByKeystore.password"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button size="mini" type="danger" @click="onImportByKeystore">确 定</el-button>
@@ -139,12 +139,12 @@
             </el-form>
         </el-dialog>
 
-        <el-dialog title="Token" :visible.sync="show.contracts">
+        <el-dialog title="代币" :visible.sync="show.contracts">
             <el-card v-for="(token,index) in contracts" :key="index">
                 <el-button size="mini">主网 {{token.network.name}}</el-button>
-                <el-button size="mini">Name {{token.name}}</el-button>
-                <el-button size="mini">Symbol {{token.symbol}}</el-button>
-                <el-button size="mini">Decimals {{token.decimals}}</el-button>
+                <el-button size="mini">名称 {{token.name}}</el-button>
+                <el-button size="mini">简称 {{token.symbol}}</el-button>
+                <el-button size="mini">精度 {{token.decimals}}</el-button>
                 <el-button size="mini">地址 {{token.address}}</el-button>
             </el-card>
         </el-dialog>
