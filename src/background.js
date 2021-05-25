@@ -10,10 +10,11 @@ const path = require("path")
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const Store = require('electron-store')
 const store = new Store()
-const proxyUrl = store.get("proxyUrl")
+const proxyUrl = store.get("proxyUrl") || ""
+const proxyStatus = store.get("proxyStatus") || false
 
-if (proxyUrl) {
-    app.commandLine.appendSwitch('proxy-server', proxyUrl.trim())
+if (proxyStatus && proxyUrl) {
+    app.commandLine.appendSwitch('proxy-server', proxyUrl)
 }
 
 protocol.registerSchemesAsPrivileged([{
@@ -24,11 +25,13 @@ protocol.registerSchemesAsPrivileged([{
     }
 }])
 
+let win = null
+
 async function createWindow() {
     // Create the browser window.
-    const win = new BrowserWindow({
-        width: 1800,
-        height: 1200,
+    win = new BrowserWindow({
+        width: 1000,
+        height: 800,
         icon: "./src/assets/bitcoin.png",
         webPreferences: {
             webSecurity: false,
@@ -74,10 +77,10 @@ app.on('ready', async () => {
     // )
 
     if (isDevelopment) {
-        await session.defaultSession.loadExtension(
-            path.join(__dirname, "extensions/vueDevTool/5.3.4_0"),
-            {allowFileAccess: true}
-        )
+        // await session.defaultSession.loadExtension(
+        //     path.join(__dirname, "extensions/vueDevTool/5.3.4_0"),
+        //     {allowFileAccess: true}
+        // )
     }
     await createWindow()
 })
@@ -170,8 +173,14 @@ const deleteFileByExt = ({root, ext, deep}) => {
 }
 
 // https://www.electronjs.org/docs/api/session#sessetproxyconfig
-const onSetProxy = async (config) => {
-    await session.defaultSession.setProxy(config)
+const onSetWinProxy = async (config) => {
+    await win.webContents.session.setProxy(config).then(_ => {
+        requestGet({
+            optional: {
+                url: "https://google.com"
+            }
+        })
+    })
 }
 
 const dataUpdate = ({name, item, primary}) => {
@@ -204,7 +213,7 @@ const actions = {
     dataUnshift,
     dataUpdate,
     dataDel,
-    onSetProxy,
+    onSetWinProxy,
     requestGet,
     requestPost,
 }

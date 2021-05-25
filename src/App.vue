@@ -45,7 +45,7 @@
                     helper.setData("networks", require("./data/networks.json"))
                 }
             },
-            onTwitter() {
+            onMuskTwitter() {
                 const res = helper.nodeRequestGet({
                     url: "https://twitter.com/i/api/graphql/2Kp5fEiA-6QtZoCKRCcGKg/UserTweetsAndReplies?variables=%7B%22userId%22%3A%2244196397%22%2C%22count%22%3A20%2C%22withHighlightedLabel%22%3Atrue%2C%22withTweetQuoteCount%22%3Atrue%2C%22includePromotedContent%22%3Atrue%2C%22withTweetResult%22%3Afalse%2C%22withReactions%22%3Afalse%2C%22withUserResults%22%3Afalse%2C%22withVoice%22%3Afalse%2C%22withNonLegacyCard%22%3Atrue%2C%22withBirdwatchPivots%22%3Afalse%7D",
                 }, {
@@ -76,20 +76,15 @@
                 }
             },
             async watchMuskTwitter() {
-                // const res = helper.nodeRequestGet({
-                //     url: "https://twitter.com/elonmusk/with_replies",
-                // })
-                // console.log(res)
-                if (helper.getData("proxyUrl")) {
-                    const status = helper.getData("muskTwitterWatch")
-                    if (status){
-                        this.index.musk = setInterval(() => {
-                            const openWatchMusk = helper.getData("openWatchMusk")
-                            if (openWatchMusk) {
-                                console.log('123')
-                            }
-                        }, 1000 * 60)
-                    }
+                const proxyUrl = helper.getData("proxyUrl")
+                const proxyStatus = helper.getData("proxyStatus")
+                const openWatchMusk = helper.getData("openWatchMusk")
+                if (proxyUrl && proxyStatus && openWatchMusk) {
+                    this.onMuskTwitter()
+                    this.index.musk = setInterval(() => {
+                        const openWatchMusk = helper.getData("openWatchMusk")
+                        if (openWatchMusk) this.onMuskTwitter()
+                    }, 1000 * 60)
                 }
             }
         }
