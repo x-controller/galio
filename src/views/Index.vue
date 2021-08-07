@@ -8,20 +8,6 @@
             <el-button @click="$router.push({name:'login'})">登录</el-button>
         </div>
 
-        <el-card header="设置代理">
-            <el-form :inline="true">
-                <el-form-item label="地址">
-                    <el-input v-model="proxyUrl" placeholder="http://127.0.0.1:57061"></el-input>
-                </el-form-item>
-                <el-form-item label="状态">
-                    <el-checkbox v-model="proxyStatus">开启</el-checkbox>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="setProxy" size="mini">设置</el-button>
-                </el-form-item>
-            </el-form>
-        </el-card>
-
         <el-button size="mini" v-if="onLine">online</el-button>
     </div>
 </template>
@@ -32,12 +18,9 @@
     const {ipcRenderer} = require('electron')
 
     export default {
-        name: "Index",
         data() {
             return {
-                proxyStatus: helper.getData("proxyStatus") || false,
                 user: helper.getStorage("user"),
-                proxyUrl: helper.getData("proxyUrl") || "http://127.0.0.1:57061",
                 onLine: navigator.onLine
             }
         },

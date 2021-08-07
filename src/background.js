@@ -30,9 +30,9 @@ let win = null
 async function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
+        title:"坚持不懈",
         width: 1000,
         height: 800,
-        icon: "./src/assets/bitcoin.png",
         webPreferences: {
             webSecurity: false,
             // Use pluginOptions.nodeIntegration, leave this alone

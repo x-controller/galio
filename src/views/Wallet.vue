@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div style="margin: 2px">
+    <el-card>
+        <template #header>
             <el-button size="mini" @click="show.create=true">创建</el-button>
             <el-button size="mini" @click="show.importByPrivateKey=true">私钥导入</el-button>
             <el-button size="mini" @click="show.importByMnemonic=true">助记词导入</el-button>
@@ -8,16 +8,18 @@
             <el-button size="mini" @click="show.createContact=true">添加Token</el-button>
             <el-button size="mini" @click="show.contracts=true">全部Token</el-button>
 
-        </div>
+        </template>
 
-        <el-card v-for="(wallet,index) in wallets" :key="index">
-            <el-button size="mini">名称 {{wallet.name}}</el-button>
-            <el-button size="mini" @click="clipboard(wallet.address)">地址 {{wallet.address}}</el-button>
-            <el-button size="mini">密钥 {{wallet.privateKey}}</el-button>
-            <el-button size="mini" v-if="wallet.mnemonic">助记词 {{wallet.mnemonic}}</el-button>
-            <el-button size="mini" @click="detail(wallet)">进入</el-button>
-            <el-button size="mini" type="danger" @click="onRemove(index)">删除</el-button>
-        </el-card>
+        <el-table :data="wallets" border>
+            <el-table-column prop="name" label="名称"></el-table-column>
+            <el-table-column prop="address" label="地址"></el-table-column>
+            <el-table-column prop="privateKey" label="密钥"></el-table-column>
+            <el-table-column prop="mnemonic" label="助记词"></el-table-column>
+            <el-table-column v-slot="{row}">
+                <el-button size="mini" @click="detail(row)">打开</el-button>
+                <el-button size="mini" type="danger" @click="onRemove(index)">删除</el-button>
+            </el-table-column>
+        </el-table>
 
         <el-dialog title="创建" :visible.sync="show.create">
             <el-form v-model="form.create">
@@ -148,7 +150,7 @@
                 <el-button size="mini">地址 {{token.address}}</el-button>
             </el-card>
         </el-dialog>
-    </div>
+    </el-card>
 </template>
 
 <script>

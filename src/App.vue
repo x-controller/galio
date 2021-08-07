@@ -16,9 +16,12 @@
                 <el-radio-button label="note">笔记</el-radio-button>
                 <el-radio-button label="wallet">钱包</el-radio-button>
                 <el-radio-button label="contractDev">合约开发</el-radio-button>
+                <el-radio-button label="setProxy">设置代理</el-radio-button>
             </el-radio-group>
         </div>
-        <router-view></router-view>
+        <div style="margin: 5px;">
+            <router-view></router-view>
+        </div>
     </div>
 </template>
 
@@ -35,8 +38,8 @@
             }
         },
         created() {
-            this.watchMuskTwitter()
-            this.initNetwork()
+            // this.watchMuskTwitter()
+            // this.initNetwork()
         },
         methods: {
             initNetwork() {
@@ -92,7 +95,8 @@
 </script>
 
 <style>
-    body {
-        font-family: "Microsoft YaHei UI Light", sans-serif;
+    @font-face {
+        font-family: "FZTJLSJW";
+        src: url("assets/fonts/FZTJLSJW.TTF");
     }
 </style>
